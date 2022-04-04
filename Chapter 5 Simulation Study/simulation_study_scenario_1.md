@@ -5,15 +5,12 @@ output:
     keep_md: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = FALSE, fig.show = TRUE)
-library(mgcv)
-require(ROCnReg)
-```
+
 
 ## P-Splines estimates function
 
-```{r}
+
+```r
 ps_est_fun <- function(y, x, x_pred) {
   
   # Returns the mean and variances functions estimates 
@@ -48,7 +45,8 @@ ps_est_fun <- function(y, x, x_pred) {
 
 ## P-Splines ROC function
 
-```{r}
+
+```r
 roc_ps <- function(yd, xd, yh, xh, p, x_pred) {
   
   # Returns the ROC and AUC estimates 
@@ -89,7 +87,8 @@ roc_ps <- function(yd, xd, yh, xh, p, x_pred) {
 
 ## Simulation function
 
-```{r, message = FALSE}
+
+```r
 simulation_fun <- function(roc_true, auc_true, nh, nd, nrep, xpred, p) {
   # Helper function to carry out the simulation
   # Returns MSE for both methods considered
@@ -178,8 +177,8 @@ simulation_fun <- function(roc_true, auc_true, nh, nd, nrep, xpred, p) {
 
 ## Simulation
 
-```{r}
 
+```r
 xpred <- seq(-1, 1, by = 0.05)
 p <- seq(0, 1, len = 101)
 
@@ -200,10 +199,12 @@ plot(xpred, auc_true, lwd = 2, type = "l",
      xlab = expression(x), ylab = "AUC",  main="True AUC curve")
 ```
 
+![](simulation_study_scenario_1_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
 ## Results
 
-```{r, message = FALSE}
 
+```r
 par(mfrow=c(2,2))
 
 #plot true auc for comparison
@@ -230,7 +231,10 @@ for (i in 1:3){
 legend(-2,2,ncol =1,legend=c("True AUC","Kernel Method","P-splines Method"), fill=c("black","blue2","red"), title="Legend", xpd=NA, cex = 0.8)
 ```
 
-```{r}
+![](simulation_study_scenario_1_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+
+```r
 # Put results into data frame
 df <- data.frame(
   "AVERAGE MSE" = c(mu_MSE_k[1], mu_MSE_k[2], mu_MSE_k[3]),

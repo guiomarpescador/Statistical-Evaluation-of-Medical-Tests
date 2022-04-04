@@ -1,9 +1,8 @@
 ---
 title: "Simulation Study Scenario 2"
-output:
+output: 
   html_document:
-    df_print: paged
-  pdf_document: default
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
