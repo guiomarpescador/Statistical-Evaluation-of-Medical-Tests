@@ -7,6 +7,11 @@ fig_width: 6
 fig_height: 4
 ---
 
+
+
+
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning= FALSE)
 rm(list = ls())
