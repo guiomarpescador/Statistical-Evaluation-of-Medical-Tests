@@ -1,5 +1,6 @@
 ---
 title: "Exploratory Data Analysis"
+author: "Guiomar Pescador-Barrios"
 output: 
   html_document:
     keep_md: true
