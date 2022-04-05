@@ -12,7 +12,9 @@ library(mgcv)
 ADNI <- read.csv("~/1. University of Edinburgh/1. Dissertation/adni_noNA.csv")
 ```
 
-Set-up
+This file contains the figures of the EDA in Chapter 6. 
+
+## Set-up
 
 ```{r}
 par(cex.axis=1.5, cex.lab=1.5, cex.main=1.2, cex.sub=1)
@@ -25,7 +27,7 @@ ym <- ADNI$tau[ADNI$DX == 2]
 yh <- ADNI$tau[ADNI$DX == 1]
 ```
 
-Helper function for colours
+### Helper function for colours
 
 ```{r}
 ggplotColours <- function(n = 6, h = c(0, 360) + 15){
@@ -34,9 +36,9 @@ ggplotColours <- function(n = 6, h = c(0, 360) + 15){
 }
 ```
 
-Test results
+## Test results
 
-Histograms
+### Histograms
 
 ```{r}
 par(mfrow = c(1,3))
@@ -45,7 +47,7 @@ hist(ym, freq = T, main = "Histogram MCI group",  xlab = "Test oucomes")
 hist(yh, freq = T, main = "Histogram CN group", xlab = "Test oucomes")
 ```
 
-Boxplot
+### Boxplot
 
 ```{r}
 qplot(factor(DX), tau, data = ADNI, geom = c("boxplot"), fill = factor(DX)) +
@@ -63,7 +65,7 @@ qplot(factor(DX), tau, data = ADNI, geom = c("boxplot"), fill = factor(DX)) +
 
 ```
 
-# Age covariate
+## Age covariate
 
 ### Scatter plot
 
@@ -94,7 +96,7 @@ barplot(table(ADNI[,c("DX","age")]),main="",col=ggplotColours(n=3),xlab="age",
 
 ## Gender covariate
 
-Boxplot
+### Boxplot
 
 ```{r}
 par(mfrow = c(1, 1))
@@ -113,7 +115,7 @@ ggplot(data = ADNI) +
 
 ```
 
-Distribution plot
+### Distribution plot
 
 ```{r}
 tableGender <- table(ADNI$gender, ADNI$DX)/nrow(ADNI)
@@ -122,9 +124,9 @@ colnames(tableGender) <- c("CN", "MCI", "AD")
 plot(tableGender,main="",ylab="Group",xlab="Gender",col=ggplotColours(n=3), cex.axis=1.5, cex.lab = 1.5)
 ```
 
-APOE4 covariate
+## APOE4 covariate
 
-Boxplot
+### Boxplot
 
 ```{r}
 ggplot(data = ADNI) +
@@ -141,7 +143,7 @@ ggplot(data = ADNI) +
         legend.position = 'none')
 ```
 
-Distribution plot
+### Distribution plot
 
 ```{r}
 tableAPOE4 <- table(ADNI$APOE4, ADNI$DX)/nrow(ADNI)
@@ -149,9 +151,9 @@ colnames(tableAPOE4) <- c("CN", "MCI", "AD")
 plot(tableAPOE4, main="", ylab="Group", xlab="APOE4", col=ggplotColours(n=3), cex.axis=1.5, cex.lab = 1.5)
 ```
 
-MMSE covariate
+## MMSE covariate
 
-Scatter plot
+### Scatter plot
 
 ```{r}
 ggplot(data = ADNI) +
@@ -170,7 +172,7 @@ ggplot(data = ADNI) +
 
 ```
 
-Barplot
+### Barplot
 
 ```{r}
 barplot(table(ADNI[,c("DX","age")]),main="",col=ggplotColours(n=3),xlab="age", 

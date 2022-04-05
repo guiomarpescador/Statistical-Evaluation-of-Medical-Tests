@@ -2,7 +2,9 @@ Exploratory Data Analysis
 ================
 Guiomar Pescador-Barrios
 
-Set-up
+This file contains the figures of the EDA in Chapter 6.
+
+## Set-up
 
 ``` r
 par(cex.axis=1.5, cex.lab=1.5, cex.main=1.2, cex.sub=1)
@@ -15,7 +17,7 @@ ym <- ADNI$tau[ADNI$DX == 2]
 yh <- ADNI$tau[ADNI$DX == 1]
 ```
 
-Helper function for colours
+### Helper function for colours
 
 ``` r
 ggplotColours <- function(n = 6, h = c(0, 360) + 15){
@@ -24,9 +26,9 @@ ggplotColours <- function(n = 6, h = c(0, 360) + 15){
 }
 ```
 
-Test results
+## Test results
 
-Histograms
+### Histograms
 
 ``` r
 par(mfrow = c(1,3))
@@ -37,7 +39,7 @@ hist(yh, freq = T, main = "Histogram CN group", xlab = "Test oucomes")
 
 ![](figures_EDA_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-Boxplot
+### Boxplot
 
 ``` r
 qplot(factor(DX), tau, data = ADNI, geom = c("boxplot"), fill = factor(DX)) +
@@ -56,7 +58,7 @@ qplot(factor(DX), tau, data = ADNI, geom = c("boxplot"), fill = factor(DX)) +
 
 ![](figures_EDA_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
-# Age covariate
+## Age covariate
 
 ### Scatter plot
 
@@ -89,7 +91,7 @@ barplot(table(ADNI[,c("DX","age")]),main="",col=ggplotColours(n=3),xlab="age",
 
 ## Gender covariate
 
-Boxplot
+### Boxplot
 
 ``` r
 par(mfrow = c(1, 1))
@@ -109,7 +111,7 @@ ggplot(data = ADNI) +
 
 ![](figures_EDA_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
-Distribution plot
+### Distribution plot
 
 ``` r
 tableGender <- table(ADNI$gender, ADNI$DX)/nrow(ADNI)
@@ -120,9 +122,9 @@ plot(tableGender,main="",ylab="Group",xlab="Gender",col=ggplotColours(n=3), cex.
 
 ![](figures_EDA_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
-APOE4 covariate
+## APOE4 covariate
 
-Boxplot
+### Boxplot
 
 ``` r
 ggplot(data = ADNI) +
@@ -141,7 +143,7 @@ ggplot(data = ADNI) +
 
 ![](figures_EDA_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
-Distribution plot
+### Distribution plot
 
 ``` r
 tableAPOE4 <- table(ADNI$APOE4, ADNI$DX)/nrow(ADNI)
@@ -151,9 +153,9 @@ plot(tableAPOE4, main="", ylab="Group", xlab="APOE4", col=ggplotColours(n=3), ce
 
 ![](figures_EDA_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
-MMSE covariate
+## MMSE covariate
 
-Scatter plot
+### Scatter plot
 
 ``` r
 ggplot(data = ADNI) +
@@ -173,7 +175,7 @@ ggplot(data = ADNI) +
 
 ![](figures_EDA_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
-Barplot
+### Barplot
 
 ``` r
 barplot(table(ADNI[,c("DX","age")]),main="",col=ggplotColours(n=3),xlab="age", 
