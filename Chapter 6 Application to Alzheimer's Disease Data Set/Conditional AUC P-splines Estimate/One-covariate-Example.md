@@ -1,0 +1,234 @@
+---
+title: "Conditional AUC P-splines Estimate - One covariate case"
+author: "Guiomar Pescador-Barrios"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+
+## P-splines estimator implementation
+
+
+```r
+ps_est_fun <- function(y, x, x_pred) {
+  # Returns the mean and variances functions estimates for P-splines estimator
+  
+  # Step 1
+  ##  Fits model for observation samples 
+  fit <- gam(y ~ s(x, bs = "ps"))
+  df_pred <- data.frame(x = x_pred)
+  ##  Obtains mean estimate
+  mean_fitted_values <- fit$fitted.values
+  mean_pred <- predict(fit, df_pred)
+  
+  # Step 2:  Transform working responses and fits model
+  y_wr <- log((y - mean_fitted_values)^2)
+  fit_wr <- gam(y_wr ~ s(x, bs = "ps"))
+  
+  # Step 3: Obtain covariates and derive theta
+  cov <- exp(fit_wr$fitted.values)
+  theta_hat <- sum(((y - mean_fitted_values)^2) * cov)/sum((cov)^2)
+
+  # Calculate sigma estimate
+  sigma2_fitted_values <- theta_hat*exp(fit_wr$fitted.values)
+   sigma2_pred <- theta_hat * exp(predict(fit_wr, df_pred))
+  
+  return(list("mu_fitted" = mean_fitted_values, 
+              "sigma2_fitted" = sigma2_fitted_values,
+              "mu_pred" = mean_pred, "sigma2_pred" = sigma2_pred))
+}
+```
+
+
+```r
+roc_ps <- function(yd, xd, yh, xh, p, x_pred) {
+  # Returns the mean and variances functions estimates 
+  # of the P-splines regression model with a single covarite
+  # as well as the corresponding the ROC and AUC estimates.
+
+  # Call a function to obtain the mean and variance estimates
+  fit_h <- ps_est_fun(y = yh, x = xh, x_pred = x_pred)
+  fit_d <- ps_est_fun(y = yd, x = xd, x_pred = x_pred)
+  
+  # Assign estimates to a variable
+  mu_h <- fit_h$mu_pred
+  sigma_h <- sqrt(fit_h$sigma2_pred)
+  
+  mu_d <- fit_d$mu_p
+  sigma_d <- sqrt(fit_d$sigma2_pred)
+  
+  # Variables to store the ROC curve and AUC given covariate values
+  roc_cov_est <- matrix(0, nrow = length(p), ncol = length(x_pred))
+  auc_est <- numeric(length(x_pred))
+  
+  # Calculate ROC curve and corresponding AUC 
+  for(j in 1:length(x_pred)){
+    roc_cov_est[, j] <- 1 - pnorm(((mu_h[j] - mu_d[j])/sigma_d[j]) + 
+                                    (sigma_h[j]/sigma_d[j])*qnorm(1 - p))
+    auc_est[j] <- sum(roc_cov_est[, j])/length(p)
+  }
+  
+  return(list("fit_h" = fit_h, "fit_d" = fit_d,
+              "rocs" = roc_cov_est, "auc" = auc_est, 
+              "mu_h" = mu_h, "mu_d" = mu_d, 
+              "sigma_h" = sigma_h, "sigma_d" = sigma_d))
+}
+```
+
+## Bootstrap CI functions
+
+
+```r
+boot_res_fun <- function(b, yd, xd, yh, xh, p, x_pred, roc_original_sample) {
+  # Returns case resample bootstrap CI for 
+  # conditional AUC
+  
+  # Set-up
+  ## Number of bootstrap samples
+  B <- b
+  ## matrix to save AUC bootstrap estimates
+  auc_est_boot_res <- matrix(0, nrow = length(x_pred), ncol = B)
+  
+  # Sample with replacement from the estimated standardized residuals
+  std_res_d_original_sample <- (yd - roc_original_sample$fit_d$mu_fitted)/
+    sqrt(roc_original_sample$fit_d$sigma2_fitted)
+  std_res_h_original_sample <- (yh - roc_original_sample$fit_h$mu_fitted)/
+    sqrt(roc_original_sample$fit_h$sigma2_fitted)
+  
+  # Obtain  mean function and variance estimates from the observed data
+  ## Diseased population
+  fit_d <- ps_est_fun(y = yd, x = xd, x_pred = xd)
+  mu_d <- fit_d$mu_pred
+  sigma_d <- sqrt(fit_d$sigma2_pred)
+  
+  ## Healthy population
+  fit_h <- ps_est_fun(y = yh, x = xh, x_pred = xh)
+  mu_h <- fit_h$mu_pred
+  sigma_h <- sqrt(fit_h$sigma2_pred)
+  
+  for(l in 1:B){
+    # Construct bth bootstrap sample
+    std_res_d_boot <- sample(std_res_d_original_sample, length(yd), 
+                             replace = TRUE)
+    yd_boot <- mu_d + sigma_d*std_res_d_boot
+    
+    std_res_h_boot <- sample(std_res_h_original_sample, length(yh), 
+                             replace = TRUE)
+    yh_boot <- mu_h + sigma_h*std_res_h_boot
+    
+    # Estimate AUC curve using the bootstrap sample
+    aux <- roc_ps(yd = yd_boot, xd = xd,
+                  yh = yh_boot, xh = xh,
+                  p = p, x_pred = x_pred)
+    
+    # Store result in matrix
+    auc_est_boot_res[, l] <- aux$auc
+  }
+  
+  auc_boot_res_l <- apply(auc_est_boot_res, 1, quantile, prob = 0.025)
+  auc_boot_res_u <- apply(auc_est_boot_res, 1, quantile, prob = 0.975)
+  
+  return(list("auc_boot_res_l" = auc_boot_res_l, 
+              "auc_boot_res_u" = auc_boot_res_u))
+  
+}
+```
+
+
+
+```r
+boot_fun <- function(b, yd, xd, yh, xh, p, x_pred) {
+  # Returns case resample bootstrap CI for 
+  # conditional AUC
+  
+  # Set-up
+  ## Number of bootstrap samples
+  B <- b
+  ## matrix to save AUC bootstrap estimates
+  auc_est_boot <- matrix(0, nrow = length(x_pred), ncol = B)
+  
+  # for all bootstrap samples
+  for(l in 1:B){
+    # Sample cases healthy population
+    ind_h <- sample(1:length(yh), size = length(yh), replace = TRUE)
+    yh_boot <- yh[ind_h]  
+    xh_boot <- xh[ind_h]
+    
+    # Sample cases healthy population
+    ind_d <- sample(1:length(yd), size = length(yd), replace = TRUE)  
+    yd_boot <- yd[ind_d]  
+    xd_boot <- xd[ind_d]
+    
+    # Estimate AUC curve using bootstrap sample
+    aux <- roc_ps(yd = yd_boot, xd = xd_boot, yh = yh_boot, 
+                  xh = xh_boot, p = p, x_pred = x_pred)
+    # Store result in matrix
+    auc_est_boot[, l] <- aux$auc
+  }
+  
+  # Calculate confidence intervals
+  auc_boot_l <- apply(auc_est_boot, 1, quantile, prob = 0.025)
+  auc_boot_u <- apply(auc_est_boot, 1, quantile, prob = 0.975)
+  
+  return(list("auc_boot_l" = auc_boot_l, "auc_boot_u" = auc_boot_u))
+  
+}
+```
+
+## Helper function for plotting
+
+
+```r
+plot_fun <- function(yd, xd, yh, xh, x_pred) {
+  # Define sequence p
+  p <- seq(0, 1, len = 101)
+  # Bootstrap samples
+  b <- 100
+  
+  # ROC and AUC estimates from original sample
+  roc_original_sample <- roc_ps(yd, xd, yh, xh, p, x_pred)
+    
+  # Bootstrap CI
+  boot_auc <- boot_fun(b, yd, xd, yh, xh, p, x_pred)
+  boot_res_auc <- boot_res_fun(b, yd, xd, yh, xh, p, x_pred, roc_original_sample)
+    
+  # Plotting
+  plot(x_pred, roc_original_sample$auc, ylim = c(0, 1),
+         type = "l", ylab = "AUC", xlab = "Age", lwd = 1.5)
+  lines(x_pred, boot_auc$auc_boot_l, lty = 2, lwd = 1.5, col = "blue")
+  lines(x_pred, boot_auc$auc_boot_u, lty = 2, lwd = 1.5, col = "blue")
+  
+  lines(x_pred, boot_res_auc$auc_boot_res_l, lty = 2, lwd = 1.5, col = "red")
+  lines(x_pred, boot_res_auc$auc_boot_res_u, lty = 2, lwd = 1.5, col = "red")
+  }
+```
+
+## Example
+
+
+```r
+yd <- ADNI$tau[ADNI$DX == 3]
+ym <- ADNI$tau[ADNI$DX == 2]
+yh <- ADNI$tau[ADNI$DX == 1]
+
+x_p <- seq(65,85, by = 0.5)
+xd <- ADNI$age[ADNI$DX == 3]
+xm <- ADNI$age[ADNI$DX == 2]
+xh <- ADNI$age[ADNI$DX == 1]
+
+par(cex.axis=2, cex.lab=2, cex.main=2, cex.sub=1, mfrow=c(1,3), mar = c(5.5, 4.5, 6.5, 2.5))
+plot_fun(yd,xd,yh,xh,x_p)
+title("AD vs. CN", line=0.5) 
+
+plot_fun(yd,xd,ym,xm,x_p)
+title("AD vs. MCI", line=0.5) 
+
+plot_fun(ym,xm,yh,xh,x_p)
+title("MCI vs. CN", line=0.5) 
+title("Age-specific AUC", outer = TRUE, line=-2) 
+```
+
+![](README_figs/README-unnamed-chunk-6-1.png)<!-- -->
+
