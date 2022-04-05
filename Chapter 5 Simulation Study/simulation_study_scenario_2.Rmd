@@ -1,12 +1,11 @@
 ---
 title: "Simulation Study Scenario 2"
-output: 
-  html_document:
-    keep_md: true
+author: "Guiomar Pescador-Barrios"
+output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = FALSE, fig.show = TRUE)
+knitr::opts_chunk$set(fig.path = "README_figs/README-", echo = TRUE, message = FALSE, warning = FALSE, results = FALSE, fig.show = TRUE)
 library(mgcv)
 require(ROCnReg)
 ```

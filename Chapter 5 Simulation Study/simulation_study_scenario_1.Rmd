@@ -1,12 +1,11 @@
 ---
 title: "Simulation Study Scenario 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Guiomar Pescador-Barrios"
+output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = FALSE, fig.show = TRUE)
+knitr::opts_chunk$set(fig.path = "README_figs/README-", echo = TRUE, message = FALSE, warning = FALSE, results = FALSE, fig.show = TRUE)
 library(mgcv)
 require(ROCnReg)
 ```
@@ -85,7 +84,6 @@ roc_ps <- function(yd, xd, yh, xh, p, x_pred) {
   return(list("ROC" = roc, "AUC" = auc))
 }
 ```
-
 
 ## Simulation function
 
@@ -175,7 +173,6 @@ simulation_fun <- function(roc_true, auc_true, nh, nd, nrep, xpred, p) {
 }
 ```
 
-
 ## Simulation
 
 ```{r}
@@ -241,4 +238,3 @@ colnames(df) <- c("AVERAGE MSE KERNEL", "SD KERNEL", "AVERAGE MSE PS", "SD PS")
 rownames(df) = c("n = 100", "n = 200", "n = 500")
 knitr::kable(df, escape = FALSE, digits = 6, caption = "Summary of values.")
 ```
-
