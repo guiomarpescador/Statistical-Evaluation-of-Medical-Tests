@@ -1,17 +1,10 @@
----
-title: "Conditional AUC P-splines Estimate, three covariates case"
-author: "Guiomar Pescador-Barrios"
-output: 
-  html_document:
-    keep_md: true
----
-
-
-
+Conditional AUC P-splines Estimate, three covariates case
+================
+Guiomar Pescador-Barrios
 
 ## Data
 
-```r
+``` r
 # Test results AD, MCI and CN respectively
 yd <- ADNI$tau[ADNI$DX == 3]
 ym <- ADNI$tau[ADNI$DX == 2]
@@ -34,11 +27,9 @@ xm3 <- ADNI$APOE4[ADNI$DX == 2]
 xh3 <- ADNI$APOE4[ADNI$DX == 1]
 ```
 
-
 ## P-splines estimator implementation
 
-
-```r
+``` r
 ps_est_fun <- function(y, x1, x2, x3, x1_pred, x2_pred, x3_pred) {
   
   fit <- gam(y ~ s(x1, bs = "ps") +  s(x2, bs = "ps") + factor(x3))
@@ -65,9 +56,7 @@ ps_est_fun <- function(y, x1, x2, x3, x1_pred, x2_pred, x3_pred) {
 }
 ```
 
-
-
-```r
+``` r
 roc_ps <- function(yd, x1d, x2d, x3d, yh, x1h, x2h, x3h, p, x1_pred, x2_pred, x3_pred) {
   
   fit_h <- ps_est_fun(y = yh, x1 = x1h, x2 = x2h, x3 = x3h,
@@ -97,8 +86,7 @@ roc_ps <- function(yd, x1d, x2d, x3d, yh, x1h, x2h, x3h, p, x1_pred, x2_pred, x3
 
 ## Bootstrap intervals implementation
 
-
-```r
+``` r
 boot_fun <- function(b, yd, x1d, x2d, x3d, yh, x1h, x2h, x3h, p, x1_pred, x2_pred, x3_pred) {
   B <- b
   auc_est_boot <- matrix(0, nrow = length(x1_pred), ncol = B)
@@ -131,9 +119,7 @@ boot_fun <- function(b, yd, x1d, x2d, x3d, yh, x1h, x2h, x3h, p, x1_pred, x2_pre
 }
 ```
 
-
-
-```r
+``` r
 boot_res_fun <- function(b, yd, x1d, x2d, x3d, yh, x1h, x2h, x3h, p, 
                          x1_pred, x2_pred, x3_pred, roc_original_sample) {
   B <- b
@@ -178,8 +164,7 @@ boot_res_fun <- function(b, yd, x1d, x2d, x3d, yh, x1h, x2h, x3h, p,
 
 ### Plotting AUC surfaces
 
-
-```r
+``` r
 plot_cov_fun_1 <- function(yd, x1d, x2d, x3d, yh, x1h, x2h, x3h,
                           x1_pred, x2_pred, ncat, cat) {
   # Define sequence p
@@ -199,11 +184,9 @@ plot_cov_fun_1 <- function(yd, x1d, x2d, x3d, yh, x1h, x2h, x3h,
 }
 ```
 
-
 ### Example
 
-
-```r
+``` r
 # Prediction values and levels of categorical covariate
 x_p <- seq(65,85, by = 0.5)
 x2_p <- seq(20,30, by = 0.25)
@@ -220,8 +203,7 @@ title("Age-/MMSE/APOE4-specific AUC surface AD vs. CN", outer = T, line=-3)
 
 ## Plotting for specific values of MMSE
 
-
-```r
+``` r
 plot_cov_fun_2 <- function(yd, x1d, x2d, x3d, yh, x1h, x2h, x3h,
                            x1_pred, x2_pred, ncat, cat) {
   # Define sequence p
@@ -251,7 +233,7 @@ plot_cov_fun_2 <- function(yd, x1d, x2d, x3d, yh, x1h, x2h, x3h,
 
 ### Example
 
-```r
+``` r
 par(mfrow = c(1,1))
 n_cat <- 0
 x_p <- seq(65,85, by = 0.5)
@@ -262,11 +244,9 @@ title("Age-specific AUC surface AD vs. CN, MMSE = 28")
 
 ![](README_figs/README-unnamed-chunk-9-1.png)<!-- -->
 
-
 ### Plotting for specific values of age
 
-
-```r
+``` r
 plot_cov_fun_3 <- function(yd, x1d, x2d, x3d, yh, x1h, x2h, x3h,
                            x1_pred, x2_pred, ncat, cat) {
   # Define sequence p
@@ -295,11 +275,9 @@ plot_cov_fun_3 <- function(yd, x1d, x2d, x3d, yh, x1h, x2h, x3h,
 }
 ```
 
-
 ### Example
 
-
-```r
+``` r
 par(mfrow = c(1,1))
 n_cat <- 0
 x2_p <- seq(22,30, by = 0.25)
@@ -309,4 +287,3 @@ title("Age-APOE4-MMSE-specific AUC, AD vs. MCI, Age = 65")
 ```
 
 ![](README_figs/README-unnamed-chunk-11-1.png)<!-- -->
-

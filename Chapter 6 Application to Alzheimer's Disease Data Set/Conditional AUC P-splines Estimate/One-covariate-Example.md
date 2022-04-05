@@ -1,17 +1,10 @@
----
-title: "Conditional AUC P-splines Estimate - One covariate case"
-author: "Guiomar Pescador-Barrios"
-output: 
-  html_document:
-    keep_md: true
----
-
-
+Conditional AUC P-splines Estimate - One covariate case
+================
+Guiomar Pescador-Barrios
 
 ## P-splines estimator implementation
 
-
-```r
+``` r
 ps_est_fun <- function(y, x, x_pred) {
   # Returns the mean and variances functions estimates for P-splines estimator
   
@@ -41,8 +34,7 @@ ps_est_fun <- function(y, x, x_pred) {
 }
 ```
 
-
-```r
+``` r
 roc_ps <- function(yd, xd, yh, xh, p, x_pred) {
   # Returns the mean and variances functions estimates 
   # of the P-splines regression model with a single covarite
@@ -79,8 +71,7 @@ roc_ps <- function(yd, xd, yh, xh, p, x_pred) {
 
 ## Bootstrap CI functions
 
-
-```r
+``` r
 boot_res_fun <- function(b, yd, xd, yh, xh, p, x_pred, roc_original_sample) {
   # Returns case resample bootstrap CI for 
   # conditional AUC
@@ -136,9 +127,7 @@ boot_res_fun <- function(b, yd, xd, yh, xh, p, x_pred, roc_original_sample) {
 }
 ```
 
-
-
-```r
+``` r
 boot_fun <- function(b, yd, xd, yh, xh, p, x_pred) {
   # Returns case resample bootstrap CI for 
   # conditional AUC
@@ -179,8 +168,7 @@ boot_fun <- function(b, yd, xd, yh, xh, p, x_pred) {
 
 ## Helper function for plotting
 
-
-```r
+``` r
 plot_fun <- function(yd, xd, yh, xh, x_pred) {
   # Define sequence p
   p <- seq(0, 1, len = 101)
@@ -207,8 +195,7 @@ plot_fun <- function(yd, xd, yh, xh, x_pred) {
 
 ## Example
 
-
-```r
+``` r
 yd <- ADNI$tau[ADNI$DX == 3]
 ym <- ADNI$tau[ADNI$DX == 2]
 yh <- ADNI$tau[ADNI$DX == 1]
@@ -231,4 +218,3 @@ title("Age-specific AUC", outer = TRUE, line=-2)
 ```
 
 ![](README_figs/README-unnamed-chunk-6-1.png)<!-- -->
-

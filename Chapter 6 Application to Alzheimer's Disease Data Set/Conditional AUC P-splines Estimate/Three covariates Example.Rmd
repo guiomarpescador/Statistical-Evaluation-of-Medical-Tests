@@ -1,9 +1,7 @@
 ---
 title: "Conditional AUC P-splines Estimate, three covariates case"
 author: "Guiomar Pescador-Barrios"
-output: 
-  html_document:
-    keep_md: true
+output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
