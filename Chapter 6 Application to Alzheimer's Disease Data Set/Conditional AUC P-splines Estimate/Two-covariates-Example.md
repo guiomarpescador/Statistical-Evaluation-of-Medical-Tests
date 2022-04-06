@@ -1,26 +1,36 @@
----
-title: "Conditional AUC P-splines Estimate, two covariates case"
-author: "Guiomar Pescador-Barrios"
-output: rmarkdown::github_document
----
+Conditional AUC P-splines Estimate, two covariates case
+================
+Guiomar Pescador-Barrios
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(fig.path = "README_figs/README-", warning = FALSE, message = FALSE)
-library(mgcv)
-ADNI <- read.csv("~/1. University of Edinburgh/1. Dissertation/adni_noNA.csv")
-```
+This document provides an example of the estimation of the conditional
+AUC using P-splines method applied to a data set concerning Alzheimer’s
+disease. The test results correspond to the concentration of Tau CSF
+biomaker. We consider the case of two covariates, age and APOE4 allele.
+The first one is continuous while the second one is categorical with
+three levels.
 
-This document provides an example of the estimation of the conditional AUC using P-splines method applied to a data set concerning Alzheimer's disease. The test results correspond to the concentration of Tau CSF biomaker. We consider the case of two covariates, age and APOE4 allele. The first one is continuous while the second one is categorical with three levels. 
-
-```{r}
+``` r
 summary(ADNI[,c("tau", "age", "APOE4")])
 ```
 
+    ##       tau              age            APOE4       
+    ##  Min.   :   5.0   Min.   :55.00   Min.   :0.0000  
+    ##  1st Qu.: 364.0   1st Qu.:67.00   1st Qu.:0.0000  
+    ##  Median : 710.0   Median :73.00   Median :0.0000  
+    ##  Mean   : 781.1   Mean   :72.33   Mean   :0.5252  
+    ##  3rd Qu.:1148.2   3rd Qu.:77.00   3rd Qu.:1.0000  
+    ##  Max.   :1797.0   Max.   :91.00   Max.   :2.0000
+
 ## Set-up model data
 
-We consider Alzheimer's diseased and cognitive normal groups as our diseased and non diseased populations. The $d$ subscript will refer to the diseased population and $h$ to the nondiseased ("healthy").
+We consider Alzheimer’s diseased and cognitive normal groups as our
+diseased and non diseased populations. The
+![d](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;d "d")
+subscript will refer to the diseased population and
+![h](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;h "h")
+to the nondiseased (“healthy”).
 
-```{r}
+``` r
 # Test results
 yd <- ADNI$tau[ADNI$DX == 3]
 yh <- ADNI$tau[ADNI$DX == 1]
@@ -34,10 +44,9 @@ xd2 <- ADNI$APOE4[ADNI$DX == 3]
 xh2 <- ADNI$APOE4[ADNI$DX == 1]
 ```
 
-
 ## P-splines estimator implementation
 
-```{r}
+``` r
 ps_est_fun <- function(y, x1, x2, x1_pred, x2_pred) {
   # Returns the mean and variances functions estimates 
   # for P-splines estimator given two covariates,
@@ -67,11 +76,9 @@ ps_est_fun <- function(y, x1, x2, x1_pred, x2_pred) {
               "sigma2_fitted" = sigma2_fitted_values,
               "mu_pred" = mean_pred, "sigma2_pred" = sigma2_pred))
 }
-
 ```
 
-
-```{r}
+``` r
 roc_ps <- function(yd, x1d, x2d, yh, x1h, x2h, p, x1_pred, x2_pred) {
   # Returns the mean and variances functions estimates 
   # of the P-splines regression model with two covarites
@@ -105,15 +112,11 @@ roc_ps <- function(yd, x1d, x2d, yh, x1h, x2h, p, x1_pred, x2_pred) {
               "mu_h" = mu_h, "mu_d" = mu_d, 
               "sigma_h" = sigma_h, "sigma_d" = sigma_d))
 }
-
 ```
-
-
-
 
 ## Bootstrap Intervals
 
-```{r}
+``` r
 boot_fun <- function(b, yd, x1d, x2d, yh, x1h, x2h, p, x1_pred, x2_pred) {
   # Returns case resample bootstrap CI for conditional AUC
   # Two covariates case
@@ -152,11 +155,9 @@ boot_fun <- function(b, yd, x1d, x2d, yh, x1h, x2h, p, x1_pred, x2_pred) {
   return(list("auc_boot_l" = auc_boot_l, "auc_boot_u" = auc_boot_u))
   
 }
-
 ```
 
-
-```{r}
+``` r
 boot_res_fun <- function(b, yd, x1d, x2d, yh, x1h, x2h, p, 
                          x1_pred, x2_pred, roc_original_sample) {
   # Returns resampling residuals bootstrap CI for 
@@ -210,12 +211,9 @@ boot_res_fun <- function(b, yd, x1d, x2d, yh, x1h, x2h, p,
   return(list("auc_boot_res_l" = auc_boot_res_l, "auc_boot_res_u" = auc_boot_res_u))
   
 }
-
-
-
 ```
 
-```{r}
+``` r
 plot_cov_fun<- function(yd, x1d, x2d, yh, x1h, x2h, x1_pred, ncat, cat) {
   
   # Define sequence p
@@ -253,7 +251,7 @@ plot_cov_fun<- function(yd, x1d, x2d, yh, x1h, x2h, x1_pred, ncat, cat) {
 
 ## Example
 
-```{r}
+``` r
 n_cat <- 0:2
 CAT <- c("APOE4 0", "APOE4 1", "APOE4 2")
 x_p <- seq(65,85, by = 0.5)
@@ -263,3 +261,4 @@ plot_cov_fun(yd, xd, xd2, yh, xh, xh2, x_p, n_cat, CAT)
 title("Age-/APOE4-specific AUC curve", outer = TRUE, line = -2)
 ```
 
+![](README_figs/README-unnamed-chunk-8-1.png)<!-- -->

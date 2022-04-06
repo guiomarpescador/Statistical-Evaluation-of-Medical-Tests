@@ -2,6 +2,46 @@ Conditional AUC P-splines Estimate - One covariate case
 ================
 Guiomar Pescador-Barrios
 
+This document provides an example of the estimation of the conditional
+AUC using P-splines method applied to a data set concerning Alzheimer’s
+disease. The test results correspond to the concentration of Tau CSF
+biomaker. We consider the case of a single continuous covariate, age.
+
+``` r
+summary(ADNI[,c("tau", "age")])
+```
+
+    ##       tau              age       
+    ##  Min.   :   5.0   Min.   :55.00  
+    ##  1st Qu.: 364.0   1st Qu.:67.00  
+    ##  Median : 710.0   Median :73.00  
+    ##  Mean   : 781.1   Mean   :72.33  
+    ##  3rd Qu.:1148.2   3rd Qu.:77.00  
+    ##  Max.   :1797.0   Max.   :91.00
+
+## Set-up model data
+
+We consider the three diagnostic alternatives, Alzheimer’s diseased,
+mild-cognitive impairment and cognitive normal groups, to form the
+diseased and non diseased populations in pairs. The groups will be
+identify in the code by the subscripts
+![d,m](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;d%2Cm "d,m")
+and
+![h](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;h "h")
+respectively.
+
+``` r
+# Test results
+yd <- ADNI$tau[ADNI$DX == 3]
+ym <- ADNI$tau[ADNI$DX == 2]
+yh <- ADNI$tau[ADNI$DX == 1]
+
+x_p <- seq(65,85, by = 0.5)
+xd <- ADNI$age[ADNI$DX == 3]
+xm <- ADNI$age[ADNI$DX == 2]
+xh <- ADNI$age[ADNI$DX == 1]
+```
+
 ## P-splines estimator implementation
 
 ``` r
@@ -9,7 +49,7 @@ ps_est_fun <- function(y, x, x_pred) {
   # Returns the mean and variances functions estimates for P-splines estimator
   
   # Step 1
-  ##  Fits model for observation samples 
+  ##  Fits model for original samples
   fit <- gam(y ~ s(x, bs = "ps"))
   df_pred <- data.frame(x = x_pred)
   ##  Obtains mean estimate
@@ -44,10 +84,12 @@ roc_ps <- function(yd, xd, yh, xh, p, x_pred) {
   fit_h <- ps_est_fun(y = yh, x = xh, x_pred = x_pred)
   fit_d <- ps_est_fun(y = yd, x = xd, x_pred = x_pred)
   
-  # Assign estimates to a variable
+  # Stores estimates
+  ## Healthy population
   mu_h <- fit_h$mu_pred
   sigma_h <- sqrt(fit_h$sigma2_pred)
   
+  ## Diseased population
   mu_d <- fit_d$mu_p
   sigma_d <- sqrt(fit_d$sigma2_pred)
   
@@ -73,7 +115,7 @@ roc_ps <- function(yd, xd, yh, xh, p, x_pred) {
 
 ``` r
 boot_res_fun <- function(b, yd, xd, yh, xh, p, x_pred, roc_original_sample) {
-  # Returns case resample bootstrap CI for 
+  # Returns resampling residuals bootstrap CI for 
   # conditional AUC
   
   # Set-up
@@ -88,7 +130,7 @@ boot_res_fun <- function(b, yd, xd, yh, xh, p, x_pred, roc_original_sample) {
   std_res_h_original_sample <- (yh - roc_original_sample$fit_h$mu_fitted)/
     sqrt(roc_original_sample$fit_h$sigma2_fitted)
   
-  # Obtain  mean function and variance estimates from the observed data
+  # Obtain mean function and variance estimates from the observed data
   ## Diseased population
   fit_d <- ps_est_fun(y = yd, x = xd, x_pred = xd)
   mu_d <- fit_d$mu_pred
@@ -109,7 +151,8 @@ boot_res_fun <- function(b, yd, xd, yh, xh, p, x_pred, roc_original_sample) {
                              replace = TRUE)
     yh_boot <- mu_h + sigma_h*std_res_h_boot
     
-    # Estimate AUC curve using the bootstrap sample
+    # Estimate AUC values for all values of the covariates
+    # using the bootstrap sample
     aux <- roc_ps(yd = yd_boot, xd = xd,
                   yh = yh_boot, xh = xh,
                   p = p, x_pred = x_pred)
@@ -117,7 +160,7 @@ boot_res_fun <- function(b, yd, xd, yh, xh, p, x_pred, roc_original_sample) {
     # Store result in matrix
     auc_est_boot_res[, l] <- aux$auc
   }
-  
+  # Calculate confidence intervals
   auc_boot_res_l <- apply(auc_est_boot_res, 1, quantile, prob = 0.025)
   auc_boot_res_u <- apply(auc_est_boot_res, 1, quantile, prob = 0.975)
   
@@ -145,7 +188,7 @@ boot_fun <- function(b, yd, xd, yh, xh, p, x_pred) {
     yh_boot <- yh[ind_h]  
     xh_boot <- xh[ind_h]
     
-    # Sample cases healthy population
+    # Sample cases diseased population
     ind_d <- sample(1:length(yd), size = length(yd), replace = TRUE)  
     yd_boot <- yd[ind_d]  
     xd_boot <- xd[ind_d]
@@ -196,14 +239,8 @@ plot_fun <- function(yd, xd, yh, xh, x_pred) {
 ## Example
 
 ``` r
-yd <- ADNI$tau[ADNI$DX == 3]
-ym <- ADNI$tau[ADNI$DX == 2]
-yh <- ADNI$tau[ADNI$DX == 1]
-
+# Set-up
 x_p <- seq(65,85, by = 0.5)
-xd <- ADNI$age[ADNI$DX == 3]
-xm <- ADNI$age[ADNI$DX == 2]
-xh <- ADNI$age[ADNI$DX == 1]
 
 par(cex.axis=2, cex.lab=2, cex.main=2, cex.sub=1, mfrow=c(1,3), mar = c(5.5, 4.5, 6.5, 2.5))
 plot_fun(yd,xd,yh,xh,x_p)
@@ -217,4 +254,4 @@ title("MCI vs. CN", line=0.5)
 title("Age-specific AUC", outer = TRUE, line=-2) 
 ```
 
-![](README_figs/README-unnamed-chunk-6-1.png)<!-- -->
+![](README_figs/README-unnamed-chunk-8-1.png)<!-- -->
