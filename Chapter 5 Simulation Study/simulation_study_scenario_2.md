@@ -2,6 +2,42 @@ Simulation Study Scenario 2
 ================
 Guiomar Pescador-Barrios
 
+This document presents a simulation study where we compare the
+performance of the P-splines method for estimating the
+covariate-specific ROC curve against that of an estimator based on
+kernel methods to estimate mean and variance functions. The references
+for the kernel approach are Pardo-Fernandez et al. (2011, Scandinavian
+Journal of Statistics) and Rodriguez-Alvarez et al. (2011, Statistics
+and Computing). This kernel approach is available in the of the package.
+
+We consider the scenario refers as ‘Scenario 2’ in the report, where
+
+![
+y\_{\\bar{D}\_i} = \\sin(\\pi x\_{\\bar{D}\_i}) + (1 + 0.75x\_{\\bar{D}\_i})\\varepsilon\_{\\bar{D}\_i}\\,,\\quad y\_{D_j} = 1 + x^2\_{D_j} + \\sqrt{\\exp(x\_{D_j})}\\varepsilon\_{D_j}
+](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0Ay_%7B%5Cbar%7BD%7D_i%7D%20%3D%20%5Csin%28%5Cpi%20x_%7B%5Cbar%7BD%7D_i%7D%29%20%2B%20%281%20%2B%200.75x_%7B%5Cbar%7BD%7D_i%7D%29%5Cvarepsilon_%7B%5Cbar%7BD%7D_i%7D%5C%2C%2C%5Cquad%20y_%7BD_j%7D%20%3D%201%20%2B%20x%5E2_%7BD_j%7D%20%2B%20%5Csqrt%7B%5Cexp%28x_%7BD_j%7D%29%7D%5Cvarepsilon_%7BD_j%7D%0A "
+y_{\bar{D}_i} = \sin(\pi x_{\bar{D}_i}) + (1 + 0.75x_{\bar{D}_i})\varepsilon_{\bar{D}_i}\,,\quad y_{D_j} = 1 + x^2_{D_j} + \sqrt{\exp(x_{D_j})}\varepsilon_{D_j}
+")
+
+Te covariates,
+![x\_{\\bar{D}\_i}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;x_%7B%5Cbar%7BD%7D_i%7D "x_{\bar{D}_i}")
+and
+![x\_{D_j}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;x_%7BD_j%7D "x_{D_j}"),
+are assumed to be independently and uniformly distributed on the
+![(-1,\\,1)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%28-1%2C%5C%2C1%29 "(-1,\,1)")
+interval. For simplicity, we further assume that errors are normally
+distributed, that is,
+![\\varepsilon\_{\\bar{D}\_i}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Cvarepsilon_%7B%5Cbar%7BD%7D_i%7D "\varepsilon_{\bar{D}_i}"),
+![\\varepsilon\_{D_j} \\sim \\mathcal{N}(0,\\,1)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Cvarepsilon_%7BD_j%7D%20%5Csim%20%5Cmathcal%7BN%7D%280%2C%5C%2C1%29 "\varepsilon_{D_j} \sim \mathcal{N}(0,\,1)")
+for
+![i = 1, \\dots, n\_{\\bar{D}}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;i%20%3D%201%2C%20%5Cdots%2C%20n_%7B%5Cbar%7BD%7D%7D "i = 1, \dots, n_{\bar{D}}")
+and
+![j = 1, \\dots, n_D](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;j%20%3D%201%2C%20%5Cdots%2C%20n_D "j = 1, \dots, n_D").
+As sample sizes for the simulated data, we will consider
+![(n_D, n\_{\\bar{D}} ) = (100,\\,100)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%28n_D%2C%20n_%7B%5Cbar%7BD%7D%7D%20%29%20%3D%20%28100%2C%5C%2C100%29 "(n_D, n_{\bar{D}} ) = (100,\,100)"),
+![(n_D, n\_{\\bar{D}} ) = (200,\\,200)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%28n_D%2C%20n_%7B%5Cbar%7BD%7D%7D%20%29%20%3D%20%28200%2C%5C%2C200%29 "(n_D, n_{\bar{D}} ) = (200,\,200)"),
+and
+![(n_D, n\_{\\bar{D}} ) = (500,\\,500)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%28n_D%2C%20n_%7B%5Cbar%7BD%7D%7D%20%29%20%3D%20%28500%2C%5C%2C500%29 "(n_D, n_{\bar{D}} ) = (500,\,500)").
+
 ## P-Splines estimates function
 
 ``` r
