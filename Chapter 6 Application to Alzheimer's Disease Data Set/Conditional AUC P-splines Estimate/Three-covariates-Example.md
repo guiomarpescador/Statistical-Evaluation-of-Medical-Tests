@@ -23,11 +23,11 @@ summary(ADNI[,c("tau", "age", "APOE4", "MMSE")])
 
 ## Data
 
-We consider the three diagnostic alternatives Alzheimer’s diseased,
-mild-cognitive impairment and cognitive normal groups to form the
-diseased and non diseased populations in pairs. The groups will be
-identify in the code by the subscripts
-![d,m](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;d%2Cm "d,m")
+We consider the three diagnostic alternatives, Alzheimer’s diseased,
+mild-cognitive impairment and cognitive normal, to form the diseased and
+non diseased populations in pairs. The groups will be identify in the
+code by the subscripts
+![d](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;d "d"),![m](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;m "m")
 and
 ![h](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;h "h")
 respectively.
