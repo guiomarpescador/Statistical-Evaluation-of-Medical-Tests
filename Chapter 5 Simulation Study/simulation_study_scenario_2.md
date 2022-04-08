@@ -8,7 +8,11 @@ covariate-specific ROC curve against that of an estimator based on
 kernel methods to estimate mean and variance functions. The references
 for the kernel approach are Pardo-Fernandez et al. (2011, Scandinavian
 Journal of Statistics) and Rodriguez-Alvarez et al. (2011, Statistics
-and Computing). This kernel approach is available in the of the package.
+and Computing). This kernel approach is available in the
+![\\texttt{cROC.kernel}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Ctexttt%7BcROC.kernel%7D "\texttt{cROC.kernel}")
+of the
+![\\texttt{ROCnReg}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Ctexttt%7BROCnReg%7D "\texttt{ROCnReg}")
+package.
 
 We consider the scenario refers as ‘Scenario 2’ in the report, where
 
@@ -18,7 +22,7 @@ y\_{\\bar{D}\_i} = \\sin(\\pi x\_{\\bar{D}\_i}) + (1 + 0.75x\_{\\bar{D}\_i})\\va
 y_{\bar{D}_i} = \sin(\pi x_{\bar{D}_i}) + (1 + 0.75x_{\bar{D}_i})\varepsilon_{\bar{D}_i}\,,\quad y_{D_j} = 1 + x^2_{D_j} + \sqrt{\exp(x_{D_j})}\varepsilon_{D_j}
 ")
 
-Te covariates,
+The covariates,
 ![x\_{\\bar{D}\_i}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;x_%7B%5Cbar%7BD%7D_i%7D "x_{\bar{D}_i}")
 and
 ![x\_{D_j}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;x_%7BD_j%7D "x_{D_j}"),
@@ -265,3 +269,11 @@ colnames(df) <- c("AVERAGE MSE KERNEL", "SD KERNEL", "AVERAGE MSE PS", "SD PS")
 rownames(df) = c("n = 100", "n = 200", "n = 500")
 knitr::kable(df, escape = FALSE, digits = 6, caption = "Summary of values.")
 ```
+
+|         | AVERAGE MSE KERNEL | SD KERNEL | AVERAGE MSE PS |    SD PS |
+|:--------|-------------------:|----------:|---------------:|---------:|
+| n = 100 |           0.013488 |  0.007750 |       0.010880 | 0.005706 |
+| n = 200 |           0.007839 |  0.003616 |       0.006809 | 0.002655 |
+| n = 500 |           0.004226 |  0.001367 |       0.003907 | 0.001073 |
+
+Summary of values.
